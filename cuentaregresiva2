@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Regresiva Estelar 🐱</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Gato Amarillo */
+        .cat-icon {
+            font-size: clamp(40px, 10vw, 60px); /* Tamaño responsivo */
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 15px #ffcc00);
+            animation: catFloat 4s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        @keyframes catFloat {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 6vw, 2.5rem); /* Se ajusta al ancho de pantalla */
+            text-align: center;
+            text-shadow: 0 0 15px #ffcc00;
+            z-index: 10;
+            margin-bottom: 30px;
+        }
+
+        .countdown-container {
+            display: flex;
+            flex-wrap: wrap; /* Permite que los cuadros bajen si no caben */
+            justify-content: center;
+            gap: 15px;
+            z-index: 10;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .segment {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            flex: 1 1 120px; /* Tamaño base de 120px, pero puede crecer */
+            max-width: 140px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.1);
+        }
+
+        .number { 
+            font-size: clamp(2rem, 8vw, 3.5rem); 
+            font-weight: bold; 
+            display: block; 
+            color: #ffcc00; 
+        }
+
+        .label { 
+            font-size: 0.7rem; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            opacity: 0.8; 
+        }
+
+        /* Estrellas Móviles */
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
+            animation: starMove 12s infinite linear;
+        }
+
+        @keyframes starMove {
+            0% { transform: translate(0, 0); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate(50px, -150px); opacity: 0; }
+        }
+
+        /* AJUSTES PARA CELULARES MUY PEQUEÑOS */
+        @media (max-width: 400px) {
+            .countdown-container {
+                gap: 10px;
+            }
+            .segment {
+                flex: 1 1 40%; /* Dos cuadros por fila */
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cat-icon">🐱</div>
+    <h1 id="title">Esperando el 25 de Marzo</h1>
+
+    <div class="countdown-container">
+        <div class="segment">
+            <span class="number" id="days">00</span>
+            <span class="label">Días</span>
+        </div>
+        <div class="segment">
+            <span class="number" id="hours">00</span>
+            <span class="label">Horas</span>
+        </div>
+        <div class="segment">
+            <span class="number" id="minutes">00</span>
+            <span class="label">Mins</span>
+        </div>
+        <div class="segment">
+            <span class="number" id="seconds">00</span>
+            <span class="label">Segs</span>
+        </div>
+    </div>
+
+    <script>
+        const targetDate = new Date("March 25, 2026 00:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = d;
+            document.getElementById("hours").innerText = h;
+            document.getElementById("minutes").innerText = m;
+            document.getElementById("seconds").innerText = s;
+        }
+
+        function createStar() {
+            const star = document.createElement("div");
+            star.className = "star";
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            const size = Math.random() * 3 + 1;
+
+            star.style.left = `${x}px`;
+            star.style.top = `${y}px`;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.animationDuration = (Math.random() * 5 + 10) + "s";
+
+            document.body.appendChild(star);
+        }
+
+        function initStars() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            const daysRemaining = Math.floor(distance / (1000 * 60 * 60 * 24));
+
+            // Siempre al menos 1 estrella
+            createStar();
+
+            if (daysRemaining <= 25 && daysRemaining >= 0) {
+                const extraStars = (25 - daysRemaining);
+                for (let i = 0; i < extraStars; i++) {
+                    createStar();
+                }
+            }
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        initStars();
+    </script>
+</body>
+</html>
